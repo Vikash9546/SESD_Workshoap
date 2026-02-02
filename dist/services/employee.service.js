@@ -19,17 +19,16 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmployeeService = void 0;
-const employee_model_1 = __importDefault(require("../models/employee.model"));
+const employee_repository_1 = require("../repositories/employee.repository");
 class EmployeeService {
+    constructor() {
+        this.employeeRepository = new employee_repository_1.EmployeeRepository();
+    }
     createEmployee(employeeData) {
         return __awaiter(this, void 0, void 0, function* () {
-            const employee = new employee_model_1.default(employeeData);
-            return yield employee.save();
+            return yield this.employeeRepository.create(employeeData);
         });
     }
     getEmployees(query) {
@@ -51,28 +50,24 @@ class EmployeeService {
             // Sorting logic
             const sort = {};
             sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
-            const employees = yield employee_model_1.default.find(filterConditions)
-                .sort(sort)
-                .skip(skip)
-                .limit(Number(limit));
-            const total = yield employee_model_1.default.countDocuments(filterConditions);
+            const employees = yield this.employeeRepository.find(filterConditions, sort, skip, Number(limit));
+            const total = yield this.employeeRepository.count(filterConditions);
             return { employees, total };
         });
     }
     getEmployeeById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield employee_model_1.default.findById(id);
+            return yield this.employeeRepository.findOne(id);
         });
     }
     updateEmployee(id, employeeData) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield employee_model_1.default.findByIdAndUpdate(id, employeeData, { new: true });
+            return yield this.employeeRepository.update(id, employeeData);
         });
     }
     deleteEmployee(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield employee_model_1.default.findByIdAndDelete(id);
-            return !!result;
+            return yield this.employeeRepository.delete(id);
         });
     }
 }

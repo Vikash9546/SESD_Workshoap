@@ -1,11 +1,15 @@
-import EmployeeModel from '../models/employee.model';
+import { EmployeeRepository } from '../repositories/employee.repository';
 import { IEmployee } from '../interfaces/employee.interface';
 
 export class EmployeeService {
+    private employeeRepository: EmployeeRepository;
+
+    constructor() {
+        this.employeeRepository = new EmployeeRepository();
+    }
 
     public async createEmployee(employeeData: Partial<IEmployee>): Promise<IEmployee> {
-        const employee = new EmployeeModel(employeeData);
-        return await employee.save();
+        return await this.employeeRepository.create(employeeData);
     }
 
     public async getEmployees(query: any): Promise<{ employees: IEmployee[], total: number }> {
@@ -31,26 +35,21 @@ export class EmployeeService {
         const sort: any = {};
         sort[sortBy as string] = sortOrder === 'asc' ? 1 : -1;
 
-        const employees = await EmployeeModel.find(filterConditions)
-            .sort(sort)
-            .skip(skip)
-            .limit(Number(limit));
-
-        const total = await EmployeeModel.countDocuments(filterConditions);
+        const employees = await this.employeeRepository.find(filterConditions, sort, skip, Number(limit));
+        const total = await this.employeeRepository.count(filterConditions);
 
         return { employees, total };
     }
 
     public async getEmployeeById(id: string): Promise<IEmployee | null> {
-        return await EmployeeModel.findById(id);
+        return await this.employeeRepository.findOne(id);
     }
 
     public async updateEmployee(id: string, employeeData: Partial<IEmployee>): Promise<IEmployee | null> {
-        return await EmployeeModel.findByIdAndUpdate(id, employeeData, { new: true });
+        return await this.employeeRepository.update(id, employeeData);
     }
 
     public async deleteEmployee(id: string): Promise<boolean> {
-        const result = await EmployeeModel.findByIdAndDelete(id);
-        return !!result;
+        return await this.employeeRepository.delete(id);
     }
 }

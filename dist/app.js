@@ -8,6 +8,7 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const database_1 = require("./config/database");
 const employee_routes_1 = require("./routes/employee.routes");
+const auth_routes_1 = require("./routes/auth.routes");
 const error_middleware_1 = require("./middlewares/error.middleware");
 class App {
     constructor(port) {
@@ -16,6 +17,7 @@ class App {
         this.connectToDatabase();
         this.initializeMiddleware();
         this.initializeRoutes();
+        this.initializeErrorHandling();
     }
     connectToDatabase() {
         const db = database_1.Database.getInstance();
@@ -28,12 +30,13 @@ class App {
     }
     initializeRoutes() {
         const employeeRoutes = new employee_routes_1.EmployeeRoutes();
+        const authRoutes = new auth_routes_1.AuthRoutes();
         this.app.use('/api/employees', employeeRoutes.router);
+        this.app.use('/api/auth', authRoutes.router);
         // Base route for health check
         this.app.get('/', (req, res) => {
             res.send('Employee Management System API is running.');
         });
-        this.initializeErrorHandling();
     }
     initializeErrorHandling() {
         this.app.use(error_middleware_1.errorMiddleware);
