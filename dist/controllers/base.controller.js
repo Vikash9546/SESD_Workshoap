@@ -9,11 +9,5 @@ class BaseController {
             data,
         });
     }
-    sendError(res, message = 'Internal Server Error', statusCode = 500) {
-        res.status(statusCode).json({
-            success: false,
-            message,
-        });
-    }
 }
 exports.BaseController = BaseController;

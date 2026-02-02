@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { BaseController } from './base.controller';
 import { EmployeeService } from '../services/employee.service';
+import { HttpException } from '../utils/http.exception';
 
 export class EmployeeController extends BaseController {
     private employeeService: EmployeeService;
@@ -10,60 +11,60 @@ export class EmployeeController extends BaseController {
         this.employeeService = new EmployeeService();
     }
 
-    public create = async (req: Request, res: Response): Promise<void> => {
+    public create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const employee = await this.employeeService.createEmployee(req.body);
             this.sendSuccess(res, employee, 'Employee created successfully', 201);
         } catch (error: any) {
-            this.sendError(res, error.message);
+            next(error);
         }
     }
 
-    public getAll = async (req: Request, res: Response): Promise<void> => {
+    public getAll = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const result = await this.employeeService.getEmployees(req.query);
             this.sendSuccess(res, result);
         } catch (error: any) {
-            this.sendError(res, error.message);
+            next(error);
         }
     }
 
-    public getOne = async (req: Request, res: Response): Promise<void> => {
+    public getOne = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const employee = await this.employeeService.getEmployeeById(req.params.id as string);
             if (!employee) {
-                this.sendError(res, 'Employee not found', 404);
+                next(new HttpException(404, 'Employee not found'));
                 return;
             }
             this.sendSuccess(res, employee);
         } catch (error: any) {
-            this.sendError(res, error.message);
+            next(error);
         }
     }
 
-    public update = async (req: Request, res: Response): Promise<void> => {
+    public update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const employee = await this.employeeService.updateEmployee(req.params.id as string, req.body);
             if (!employee) {
-                this.sendError(res, 'Employee not found', 404);
+                next(new HttpException(404, 'Employee not found'));
                 return;
             }
             this.sendSuccess(res, employee, 'Employee updated successfully');
         } catch (error: any) {
-            this.sendError(res, error.message);
+            next(error);
         }
     }
 
-    public delete = async (req: Request, res: Response): Promise<void> => {
+    public delete = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const success = await this.employeeService.deleteEmployee(req.params.id as string);
             if (!success) {
-                this.sendError(res, 'Employee not found', 404);
+                next(new HttpException(404, 'Employee not found'));
                 return;
             }
             this.sendSuccess(res, null, 'Employee deleted successfully');
         } catch (error: any) {
-            this.sendError(res, error.message);
+            next(error);
         }
     }
 }

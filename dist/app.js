@@ -8,6 +8,7 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const database_1 = require("./config/database");
 const employee_routes_1 = require("./routes/employee.routes");
+const error_middleware_1 = require("./middlewares/error.middleware");
 class App {
     constructor(port) {
         this.app = (0, express_1.default)();
@@ -32,6 +33,10 @@ class App {
         this.app.get('/', (req, res) => {
             res.send('Employee Management System API is running.');
         });
+        this.initializeErrorHandling();
+    }
+    initializeErrorHandling() {
+        this.app.use(error_middleware_1.errorMiddleware);
     }
     listen() {
         this.app.listen(this.port, () => {

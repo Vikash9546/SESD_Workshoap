@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response } from 'express';
 
 export abstract class BaseController {
 
@@ -7,13 +7,6 @@ export abstract class BaseController {
             success: true,
             message,
             data,
-        });
-    }
-
-    protected sendError(res: Response, message: string = 'Internal Server Error', statusCode: number = 500): void {
-        res.status(statusCode).json({
-            success: false,
-            message,
         });
     }
 }

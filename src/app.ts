@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import { Database } from './config/database';
 import { EmployeeRoutes } from './routes/employee.routes';
+import { errorMiddleware } from './middlewares/error.middleware';
 
 export class App {
     public app: Application;
@@ -35,6 +36,12 @@ export class App {
         this.app.get('/', (req, res) => {
             res.send('Employee Management System API is running.');
         });
+
+        this.initializeErrorHandling();
+    }
+
+    private initializeErrorHandling(): void {
+        this.app.use(errorMiddleware);
     }
 
     public listen(): void {
