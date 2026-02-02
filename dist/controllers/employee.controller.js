@@ -26,8 +26,8 @@ class EmployeeController extends base_controller_1.BaseController {
         });
         this.getAll = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const employees = yield this.employeeService.getEmployees();
-                this.sendSuccess(res, employees);
+                const result = yield this.employeeService.getEmployees(req.query);
+                this.sendSuccess(res, result);
             }
             catch (error) {
                 this.sendError(res, error.message);

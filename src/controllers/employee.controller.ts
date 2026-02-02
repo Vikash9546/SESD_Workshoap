@@ -21,8 +21,8 @@ export class EmployeeController extends BaseController {
 
     public getAll = async (req: Request, res: Response): Promise<void> => {
         try {
-            const employees = await this.employeeService.getEmployees();
-            this.sendSuccess(res, employees);
+            const result = await this.employeeService.getEmployees(req.query);
+            this.sendSuccess(res, result);
         } catch (error: any) {
             this.sendError(res, error.message);
         }
